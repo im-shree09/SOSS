@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+  </head>
+  <body>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+      <div class="container-fluid">
+        <a class="navbar-brand" href="#">CoviCare</a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+          <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarSupportedContent">
+          <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+            <li class="nav-item">
+              <a class="nav-link active" aria-current="page" href="project.html">Home</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="about.html">About</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="index.html">Admin</a>
+            </li>
+            <li class="nav-item dropdown">
+              <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                FAQs
+              </a>
+              <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+                  <li><a class="dropdown-item" href="https://www.muhealth.org/our-stories/covid-19-vaccine-myths-vs-facts">Misconceptions about Covid-19 Vaccins</a></li>
+                  <li><a class="dropdown-item" href="https://www.cdc.gov/coronavirus/2019-ncov/vaccines/vaccine-benefits.html">Why to get vaccinated</a></li>
+                  <li><hr class="dropdown-divider"></li>
+                  <li><a class="dropdown-item" href="https://theprint.in/india/its-oxygen-beds-not-ventilators-that-matter-now-in-the-battle-against-coronavirus/450356/">What is Oxygen Beds</a></li>
+                  <li><hr class="dropdown-divider"></li>
+                  
+                </ul>
+              </li>
+              <li class="nav-item">
+                  <a class="nav-link" href="contactus.html">Contact Us</a>
+                </li>
+            
+          </ul>
+          
+        </div>
+      </div>
+    </nav>
+    <style>
+        .form{
+          padding-left: 70px;
+        }
+      </style>
+    <div class="form">
+        <br>
+    Total Oxygen Beds: <input type="number" type="Toxytbox"  name="oxygen beds"  oninput="update(this.value,'Toxybed')"/> <br />
+    <br>Available Oxygen Beds: <input type="number" type="Aoxytbox"  name="oxygen beds" oninput="update(this.value,'Aoxybed') " / > <br />
+    <br>Total Non Oxygen Beds:<input type="number" type="TNoxytbox"  name="non oxygen beds"  oninput="update(this.value,'TNoxybed')" /> <br />
+    <br>Available Non Oxygen Beds:<input type="number" type="ANoxytbox"  name="non oxygen beds" oninput="update(this.value,'ANoxybed')"  /><br />
+    <br>Hospital ID: <input type="number" type="hospitalID"  name="hospital ID" oninput="update(this.value,'HosID')"  /><br />
+</div>
+    <hr>
+    <div class="form">
+        <button id="insertbtn">INSERT</button>
+    <button id="selectbtn">SELECT</button>
+    <button id="updatebtn">UPDATE</button>
+    <button id="deletebtn">DELETE</button>
+    
+    </div>
+  <!-- The core Firebase JS SDK is always required and must be listed first -->
+  <script src="https://www.gstatic.com/firebasejs/8.6.8/firebase.js"></script>
+
+  <!-- TODO: Add SDKs for Firebase products that you want to use
+       https://firebase.google.com/docs/web/setup#available-libraries -->
+  <script src="https://www.gstatic.com/firebasejs/8.6.8/firebase-auth.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.6.8/firebase-firestore.js"></script>
+
+  <script id="mainscript">
+    let ToxyT = document.getElementById('Toxytbox');
+    let AoxyT = document.getElementById('Aoxytbox');
+    let TNoxyT = document.getElementById('TNoxytbox');
+    let ANoxyT = document.getElementById('ANoxytbox');
+    let HosIDT = document.getElementById('HosIDbox');
+    let ToxyV , AoxyV ,TNoxyV ,ANoxyV , HosIDV ;
+
+    function update(val,type){
+      if(type=='Toxybed')ToxyV=val;
+      if(type=='Aoxybed')AoxyV=val;
+      if(type=='TNoxybed')TNoxyV=val;
+      if(type=='ANoxybed') ANoxyV=val;
+      if(type=='HosID') HosIDV=val;
+
+    }
+
+
+    //  ------------------------------configuration-----------------
+     // Your web app's Firebase configuration
+  var firebaseConfig = {
+    apiKey: "AIzaSyDi-LN4POVHA62mrSkeeBcTw7dpe2Tto0I",
+    authDomain: "bed-info-edit.firebaseapp.com",
+    projectId: "bed-info-edit",
+    storageBucket: "bed-info-edit.appspot.com",
+    messagingSenderId: "673316020335",
+    appId: "1:673316020335:web:6284edb4aab65adcc42d9a"
+  };
+
+    firebase.initializeApp(firebaseConfig);
+    let cloudDB = firebase.firestore();
+
+
+  // ------------------------------------------------------writing data--------------------------------------------------------
+  
+  
+
+//  ----------------------add document with wuto genetrated id---------------------
+function Add_Doc_WithAutoID(){
+  cloudDB.collection("hospitalsbeds").add(
+    {
+       toxybeds:  Number(ToxyV),
+       aoxybeds : Number(AoxyV),
+       tnoxybeds : Number(TNoxyV),
+       anoxybeds : Number(ANoxyV),
+       HospID : Number(HosIDV)
+    }
+  )
+  .then(function(docRef){
+    console.log("document written with ID", docRef.id);
+  })
+  .catch(function(error){
+    console.error();("error adding document", error);
+  })
+
+}
+//  ----------------------add document with custom id---------------------
+function Add_Doc_WithID(){
+  cloudDB.collection("hospitalsbeds").doc(HosIDV).set(
+    {
+       toxybeds:  Number(ToxyV),
+       aoxybeds : Number(AoxyV),
+       tnoxybeds : Number(TNoxyV),
+       anoxybeds : Number(ANoxyV),
+       HospID : Number(HosIDV)
+    }
+  )
+  .then(function(){
+    console.log("document written with ID",HosIDV);
+  })
+  .catch(function(error){
+    console.error();("error adding document", error);
+  })
+
+}
+
+// -----------------------------------updating data----------------------------------------------------
+
+//  update fields inside a document
+function update_Fields_InDocument(){
+  cloudDB.collection("hospitalsbeds").doc(HosIDV).set(
+    {
+       toxybeds:  Number(ToxyV),
+       aoxybeds : Number(AoxyV),
+       tnoxybeds : Number(TNoxyV),
+       anoxybeds : Number(ANoxyV)
+    }
+  )
+  .then(function(){
+    console.log("document updated with ID",HosIDV);
+  })
+  .catch(function(error){
+    console.error();("error updating document", error);
+  })
+
+}
+// -----------------------------------deleting data----------------------------------------------------
+
+// delete a document
+function delete_InDocument(){
+  cloudDB.collection("hospitalsbeds").doc(HosIDV).delete(
+   
+  )
+  .then(function(){
+    console.log("document deleted with ID",HosIDV);
+  })
+  .catch(function(error){
+    console.error();("error deleting document", error);
+  })
+
+}
+// -----------------------------------reading data----------------------------------------------------
+
+// retrieve data within  a document
+function retrieve_InDocument(){
+  cloudDB.collection("hospitalsbeds").doc(HosIDV).get()
+   .then(function(doc){
+    if(doc.exists){
+       ToxyT.value = doc.data().toxybeds;
+       AoxyT.value = doc.data().aoxybeds;
+       TNoxyT.value = doc.data().tnoxybeds;
+       ANoxyT.value = doc.data().anoxybeds;
+      }
+      else
+      {
+        console.log("doc does not exists");
+      }    
+    })
+    .catch(function(error){
+    console.error();("error ", error);
+  })
+
+}
+
+
+
+    // -------------------------button events-----------------------
+
+    document.getElementById('insertbtn').onclick=function(){
+      Add_Doc_WithID();
+    }
+    document.getElementById('selectbtn').onclick=function(){
+
+    }
+    document.getElementById('updatebtn').onclick=function(){
+      update_Fields_InDocument();
+    }
+    document.getElementById('deletebtn').onclick=function(){
+      delete_InDocument();
+    }
+    
+
+
+  </script>
+</body>
+</html>
